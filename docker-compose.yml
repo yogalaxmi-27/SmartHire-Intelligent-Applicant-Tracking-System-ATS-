@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build: .
+    container_name: smarthire-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb+srv://yogalaxmi2710_db_user:8ddKLA0SDgFG4pcy@cluster0.nmb2hie.mongodb.net
+      - MONGO_DB=smarthire
+      - FLASK_ENV=production
+      - SECRET_KEY=your-secret-key-change-in-production
+    restart: unless-stopped
+    networks:
+      - smarthire-network
+
+  # Frontend (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: smarthire-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - smarthire-network
+
+networks:
+  smarthire-network:
+    driver: bridge
